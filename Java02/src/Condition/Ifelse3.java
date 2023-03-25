@@ -40,7 +40,7 @@ public class Ifelse3 {
 		yyear=sc.nextInt();
 		if((yyear%4)==0 && (yyear%100)!=0) {System.out.println("윤년");}
 		else {System.out.println("윤년아님");}
-		
+		sc.close();
 	}
 
 }
