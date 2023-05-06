@@ -79,7 +79,12 @@ class MyDictionary {
 
 	public void Set_Dic(String eng, String chg_kor) {
 		Set<String> set = Hmap.keySet();
-		System.out.println(set);
+		for (String temp : set) {
+			if(temp==eng) {
+				Hmap.remove(eng);
+				Hmap.put(eng, chg_kor);
+			}
+		}
 		
 
 	}
