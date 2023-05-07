@@ -63,10 +63,3 @@ class MyInput extends Thread{
 		
 	}
 }
-
-
-
-
-
-//생성자와 멤버변수의 지정 위치에 따른 차이
-// next(), nextline(), nextint() next와 나머지의 차이

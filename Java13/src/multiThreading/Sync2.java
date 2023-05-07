@@ -16,7 +16,7 @@ public class Sync2 {
 class DressRoom implements Runnable{
 
 	public void run() {
-		synchronized (this) {
+		synchronized (this) {	//이미 사용중이면 다른 애들은 대기
 			String name = Thread.currentThread().getName();
 			System.out.println(name+" 의상실로 들어갑니다");
 			for(int time=1;time<6;time++) {
