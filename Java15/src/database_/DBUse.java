@@ -3,13 +3,29 @@ package database_;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DBUse {
 	public static void main(String[] args) {
 		MYQuery mq = new MYQuery();
+		//mq.insert();
+		//mq.update();
+		//mq.delete();
+		/*
 		mq.connect();
-		mq.insert();
+		mq.selectALL();
+		mq.disconnect();	*/
+	
+		mq.connect();
+		mq.selectALL();
+		System.out.println("====================");
+		mq.insert();	//추가
+		mq.update();	//변경
+		mq.selectALL();
+		mq.disconnect();
+	
 	}
 
 }
@@ -46,6 +62,50 @@ class MYQuery{
 		
 	}
 	
+	//DB 조회 : SELECT
+	public void selectALL() {
+		PreparedStatement pstmt = null;
+		String sql_query = "SELECT * FROM company.employee"; 
+
+		ResultSet rs = null;
+		ArrayList<Integer> no = new ArrayList<>();
+		ArrayList<String> name = new ArrayList<>();
+		ArrayList<String> gender = new ArrayList<>();
+		
+		try {
+			//1. pstmt에다가 sql_query 넣기
+			pstmt = conn.prepareStatement(sql_query);
+
+			//2. ? 채워넣기 (생략)
+			
+			//3. sql 쿼리 전송하고 그 결과를 변수에 담는다.
+			rs = pstmt.executeQuery();
+			
+			//4. 적절하게 배치
+			while(rs.next()) {
+				no.add(rs.getInt(1));
+				name.add(rs.getString("name"));
+				gender.add(rs.getString("gender"));	
+			}
+			
+			//출력테스트
+			for(int i=0;i<no.size();i++) {
+				System.out.println(no.get(i)+","+name.get(i)+","+gender.get(i));
+			}
+			
+			//5. 정리
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}			
+		}		
+	}
+	
 	// DB입력 : INSERT INTO 테이블명 VALUSES 값;
 	public void insert() {
 		PreparedStatement pstmt = null;
@@ -54,7 +114,7 @@ class MYQuery{
 		//pstmt에다가 sql query넣기
 		try {
 			pstmt = conn.prepareStatement(sql_query);
-			pstmt.setInt(1, 5);							
+			pstmt.setInt(1, 4);							
 			pstmt.setString(2,"아무희");				
 			pstmt.setString(3, "여자");
 			
@@ -73,10 +133,82 @@ class MYQuery{
 		} finally {
 			try {
 				pstmt.close();
-				conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		}
+	}			//insert()
+	//DB수정(UPDATE 테이블명 SET 내용)
+	
+	public void update() {
+		PreparedStatement pstmt = null;
+		String sql_query = "UPDATE company.employee SET gender=? WHERE name=?";
+	
+		//1. pstmt에다가 sql 문자열을 담는다.
+		try {
+		
+			pstmt = conn.prepareStatement(sql_query);
+			//2. pstmt의 ?를 채워넣는다.
+			pstmt.setString(1, "여자");
+			pstmt.setString(2, "아무개");
+			
+			//3. DB로 전송한다.
+			int result = pstmt.executeUpdate();
+			
+			//4. 결과를 확인한다.
+			if(result > 0) {
+				System.out.println("업데이트 성공");
+			}else System.out.println("업데이트 실패");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			//5. 더이상 사용하지 않을 자원은 정리한다.
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+		}
+		
+	}
+	//DB삭제 (DELETE FROM 테이블명 WHERE 조건)
+	public void delete() {
+		PreparedStatement pstmt = null;
+		String sql_query = "DELETE FROM company.employee WHERE name=?";
+	
+		//1. pstmt에다가 sql 문자열을 담는다.
+		try {
+		
+			pstmt = conn.prepareStatement(sql_query);
+			//2. pstmt의 ?를 채워넣는다.
+			pstmt.setString(1, "아무개");
+			
+			//3. DB로 전송한다.
+			int result = pstmt.executeUpdate();
+			
+			//4. 결과를 확인한다.
+			if(result > 0) {
+				System.out.println("삭제 성공");
+			}else System.out.println("삭제 실패");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			//5. 더이상 사용하지 않을 자원은 정리한다.
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+		}
+		
+	}
+	public void disconnect() {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
